@@ -20,4 +20,23 @@ dependencies = [
     "seaborn>=0.13.2",
     "xgboost>=3.3.0",
 ]
+[tool.pyright]
+extraPaths = [
+    "clase2/jupyter_notebooks",
+    "clase3/jupyter_notebooks",
+    "clase4/jupyter_notebooks",
+    "clase5/jupyter_notebooks",
+    "clase6/jupyter_notebooks",
+    "clase7/jupyter_notebooks"
+]
+
+[tool.ty]
+extra-paths = [
+    "clase2/jupyter_notebooks",
+    "clase3/jupyter_notebooks",
+    "clase4/jupyter_notebooks",
+    "clase5/jupyter_notebooks",
+    "clase6/jupyter_notebooks",
+    "clase7/jupyter_notebooks"
+]
 
