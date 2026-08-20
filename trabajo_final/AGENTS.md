@@ -55,6 +55,7 @@ Sin quiebres de línea artificiales dentro del texto. Dejar que cada párrafo fl
 - **No sobrecomplicar.** Reproducir el patrón de los notebooks de las clases 2–5; si el curso ya tiene una forma de hacer algo, copiarla.
 - **No rehacer lo que ya está escrito** (secciones 1 a 4), salvo para arreglar un error o warning existente: en ese caso se corrige in situ lo mínimo indispensable. En todos los demás casos, sí se pueden agregar secciones nuevas debajo.
 - **Notebook debe correr sin warnings ni errores.** Los `FutureWarning` se silencian ya con `warnings.filterwarnings("ignore")` en el bloque de imports; si aparece uno nuevo al sumar código, agregar la línea de supresión en ese mismo bloque con un comentario corto.
+- **No entregar el cuaderno con el subsample de verificación activado.** La celda 6 tiene una línea comentada (`# df = df.sample(n=1500, ...)`) que sirve para una corrida rápida y validar que el código cierra sin errores ni warnings antes de la entrega. **Para entregar: dejar comentada** — train y test deben ser los del dataset completo.
 - **Mantener ambos archivos (`AGENTS.md` y `PLAN.md`) actualizados** ante cualquier cambio de diseño (ruta nueva, regla nueva, sección nueva) para que una sesión futura no pierda contexto.
 
 ## Helpers ya disponibles en el notebook (no redefinir)
