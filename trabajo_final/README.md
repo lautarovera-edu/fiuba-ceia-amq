@@ -1,3 +1,9 @@
+# Preparación
+
+```sh
+brew install libomp # para https://optuna.org/
+```
+
 # Programa de curso
 
 1. Introducción a Machine Learning. Definiciones. Ciclo de vida de un proyecto de Aprendizaje Automático. Metodología para construir modelos.
