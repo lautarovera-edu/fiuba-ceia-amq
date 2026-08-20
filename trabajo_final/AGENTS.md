@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Notebook `tp-final-airbnb-rj.ipynb`. Problema de regresión: predecir el precio por noche de alojamientos de Airbnb en Río de Janeiro (dataset detallado de Inside Airbnb, 90 columnas). Las 12 secciones están escritas y el notebook corre de punta a punta sin errores ni warnings. Las secciones 1–4 son del compañero; el resto es del asistente.
+Notebook `listings.ipynb`. Problema de regresión: predecir el precio por noche de alojamientos de Airbnb en Río de Janeiro (dataset detallado de Inside Airbnb, 90 columnas). Las 12 secciones están escritas y el notebook corre de punta a punta sin errores ni warnings. Las secciones 1–4 son del compañero; el resto es del asistente.
 
 ## Formato de los archivos markdown
 
