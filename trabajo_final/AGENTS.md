@@ -18,7 +18,7 @@ Sin quiebres de línea artificiales dentro del texto. Dejar que cada párrafo fl
 - **Identificadores en código: sólo caracteres latinos simples (ASCII), sin tildes ni ñ.** Nombres de variables, funciones y settings van sin acentos (p.ej. `TAMANO_SUBSET`, no `TAMAÑO_SUBSET`) — comentarios y markdown en español siguen normales, esto es sólo para lo que el intérprete de Python lee como identificador.
 - **No tocar las secciones 1 a 4** (son del compañero, incluida su celda de EDA/preprocesamiento), salvo para arreglar un error o warning existente — y ahí, lo mínimo indispensable.
 - **Notebook debe correr sin warnings ni errores.** El bloque de imports tiene un único `warnings.filterwarnings("ignore")` que cubre todo (incluye un `UserWarning` informativo de `sklearn.utils.parallel` que aparece ~95 veces en el barrido de `max_features` de RF). Si se acota ese filtro en el futuro, correr el notebook completo después — puede destapar warnings que hoy están silenciados de más.
-- **No entregar el cuaderno con el subsample de verificación activado.** La celda de Configuración define `TAMANO_SUBSET`; la celda de carga del dataset la usa (`if TAMANO_SUBSET is not None: ...`) para tomar sólo esa cantidad de filas. Para validar rápido: poner un número (p.ej. `TAMANO_SUBSET = 1000`). **Para entregar: dejarlo en `None`** (dataset completo). **Estado actual (verificado 2026-08-20): está en `10000`, no en `None`.** El notebook guardado (commit `tp: medium train`) corrió y guardó sus resultados sobre ese subsample de 10.000 filas, no sobre el dataset completo (48.713 filas) — falta la corrida final. Ver checklist "Antes de entregar".
+- **No entregar el cuaderno con el subsample de verificación activado.** La celda de Configuración define `TAMANO_SUBSET`; la celda de carga del dataset la usa (`if TAMANO_SUBSET is not None: ...`) para tomar sólo esa cantidad de filas. Para validar rápido: poner un número (p.ej. `TAMANO_SUBSET = 1000`). **Para entregar: dejarlo en `None`** (dataset completo). **Estado actual (2026-08-21): está en `None` y la corrida completa ya se hizo** sobre las 44.238 filas que quedan tras el corte de precio. Los resultados guardados en el notebook son los definitivos.
 - **El notebook debe pasar `uvx ruff check trabajo_final/listings.ipynb` sin warnings.** No hace falta instalar ruff en el proyecto (rompería la regla de "no instalar paquetes") — `uvx ruff check ...` lo baja y corre sin tocar el entorno del notebook. Reglas activas: E, F, I, N, UP, PL (`pyproject.toml`). Antes de dar por cerrada una celda nueva, correr ese comando.
 - **Imports: todos en la celda de imports** (justo después de la celda de Configuración, antes de la paleta de colores), en una sola lista ordenada alfabéticamente por módulo. No agregar un `import` suelto en una celda de más abajo aunque sólo se use ahí — si una celda nueva necesita un módulo no importado todavía, el import va arriba, no junto al uso.
 - **Colores: sólo en la paleta de la celda de imports.** Si una celda nueva necesita un tono que no está en la paleta (p.ej. una gama para un gráfico), se define la constante ahí arriba (ver `NARANJA_CLARO`, `MAGENTA_CLARO`, `VIOLETA_OSCURO` para la gama de 11.2) en vez de escribir el hex suelto en la celda que lo usa.
@@ -46,12 +46,23 @@ Por decisión de 3.7 todos los modelos nuevos entrenan sobre `log(precio)`. Por 
 
 ## Antes de entregar
 
-1. **Pendiente, es lo único que falta:** poner `TAMANO_SUBSET = None` en la celda de Configuración (hoy está en `10000`) y correr el notebook completo (estimado 4–9 horas; SVR, el barrido de RF y Stacking son los cuellos de botella). Si el runtime es prohibitivo, recortar en este orden: trials de Optuna → RF del sweep → RF del stacking → grilla de SVR.
-2. Confirmar que termina sin errores ni warnings — con la corrida de 10k filas ya vale: sin errores, sin stderr, `uvx ruff check` limpio.
-3. Releer las secciones 8, 9, 11 y 12 contra los resultados de la corrida completa (ver hallazgo abajo) — se escribieron mirando la corrida de 10k filas, los números y posiblemente el orden relativo de modelos van a moverse.
-4. Decidir si el checkpointing se deja en el cuaderno entregado o se saca — ver la regla dura de arriba.
+1. ~~Poner `TAMANO_SUBSET = None` y correr completo~~ **hecho** (2026-08-21). SVR fue el cuello de botella real: 107 min sólo esa celda.
+2. ~~Confirmar que termina sin errores ni warnings~~ **hecho**: 56 celdas de código, 0 errores, 0 stderr, `execution_count` secuencial.
+3. ~~Releer las secciones 8, 9, 11 y 12 contra los resultados de la corrida completa~~ **hecho**: se reescribió la 12 entera y se actualizaron los números de 2.5, 2.7, 2.8, 2.9, 2.11, 3.6, 3.7, 3.8, 4.2 y 4.3, que venían del scrape de marzo.
+4. Decidir si el checkpointing se deja en el cuaderno entregado — ver la regla dura de arriba. **Sigue pendiente.**
+5. Ejecutar la celda de distribución del error de la sección 12 (es nueva, quedó sin correr).
 
-## Hallazgos pendientes de re-verificación contra la corrida completa
+## Hallazgos de la corrida completa
 
-- **Importancia de barrio (secciones 8 y 12)**: afirman que las dummies de barrio están entre las features más importantes de RF. Confirmado que es medible con la corrida de 10k filas (el umbral de 200 apariciones de 3.3 dejó 10 categorías de barrio, no colapsó a 1) — pero los números y el ranking de importancia son de esa corrida chica, no de la completa. Confirmar que se sostiene una vez corrido sobre las 48.713 filas.
-- En general, cualquier frase de las secciones 8–12 que explique *por qué* gana un modelo (no sólo *que* gana) conviene releerla después de la corrida completa.
+- **Gana XGBoost (Optuna) con MAE 250,5 BRL**, empate técnico con Stacking (250,9), que le gana en R² y RMSE. La familia lineal queda en 294,3 y el baseline heurístico en 385.
+- **La hipótesis del EDA se confirmó.** `latitude` es la feature más importante por permutación y `longitude` la tercera, pese a que la correlación lineal de `longitude` con el precio es −0,019. Es el argumento central del trabajo.
+- **AdaBoost colapsa**: MAE 461,3, peor que el baseline heurístico, con MAE de train igual de malo (462,6). No sobreajusta, no aprende. Vale la pena dejarlo y explicarlo.
+- **El árbol podado (334,8) queda peor que la regresión lineal.** El salto llega recién con Bagging y RF.
+- **Las tres banderas de faltantes no aportaron nada** (importancia de permutación ≈ 0), ni tampoco `sin_reseñas`. Un árbol puede partir directo en `reviews_per_month == 0`. En Ridge, en cambio, `sin_reseñas` era el coeficiente más grande. Sirven para la familia lineal, no para la de árboles.
+- **El error tiene forma de U**, no crece monótonamente con el precio: 46 % de error relativo en el quintil más barato, 23 % en el medio, 37 % en el más caro. Sólo el 45 % de las predicciones cae dentro de ±20 %.
+- **En SVR ganó `C=1`**, así que los fits con `C=100` (la mayor parte de los 107 min) se descartaron. La grilla de la cátedra está pensada para 200 filas, no para 31k.
+
+## Cambios sobre el notebook original
+
+- Se agregaron tres banderas de ausencia (`sin_dormitorios`, `sin_baños`, `sin_camas`) al criterio de `sin_reseñas`. El cambio de scrape a junio llevó los faltantes de `bedrooms` de 123 a 6.446 casos (21,5 % de las filas). No aportaron señal, pero el párrafo de 3.1 que decía "menos del 1 % de las filas" era falso y había que corregirlo igual.
+- k-NN, Voting y Stacking llevan ahora una frase que justifica su uso: su variante de regresión no se dio en clase (sólo la de clasificación), y se aclara que es el mismo algoritmo cambiando el paso final.
