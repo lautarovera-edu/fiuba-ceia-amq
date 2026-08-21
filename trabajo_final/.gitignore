@@ -1,2 +1,2 @@
-*.csv.gz
-checkpoint_*.pkl
+/checkpoint_*.pkl
+/listings.csv.gz
